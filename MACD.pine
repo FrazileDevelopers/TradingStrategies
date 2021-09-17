@@ -1,0 +1,36 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © frazilex
+
+//Step One: Initial Setting
+//@version=4
+strategy("MACD", overlay = true, currency = currency.NONE, initial_capital = 10000, default_qty_type = strategy.percent_of_equity, default_qty_value = 100, commission_type = strategy.commission.percent, commission_value = 0)
+
+//Step Two: Parameter Setting
+[macdLine, signalLine, histLine] = macd(close, 12, 26, 9)
+
+//Step Three: Plot
+plot(histLine, style = plot.style_columns, color = histLine >= 0 ? color.green : color.red) 
+plot(macdLine, color = color.blue) 
+plot(signalLine, color = color.orange) 
+
+//Step Four: Strategy Entry and Strategy Close
+//MACD Line Bull/Bear Trend
+if crossover(macdLine, 0)
+    strategy.entry("macd", long = true)
+
+if crossunder(macdLine, 0)
+    strategy.close("macd")
+
+//Histogram Line Bull/Bear Trend
+if crossover(histLine, 0)
+    strategy.entry("macd", long = true)
+
+if crossunder(histLine, 0)
+    strategy.close("macd")
+
+//Histogram and MACD against the Market
+if crossunder(histLine, 0) and macdLine < 0
+    strategy.entry("macd", long = true)
+
+if crossover(histLine, 0) and macdLine > 0
+    strategy.close("macd")

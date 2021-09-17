@@ -1,0 +1,17 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © frazilex
+
+//@version=4
+strategy("Pine Script 1", overlay=true, initial_capital = 1000, default_qty_value = 100, default_qty_type = strategy.percent_of_equity)
+fastEMA = ema(close, 24)
+slowEMA = ema(close,  200)
+goLongCondition1  = crossover(fastEMA, slowEMA)
+timePeriod = time >= timestamp(syminfo.timezone, 2020, 09, 17, 0, 0)
+notInTrade = strategy.position_size <= 0
+if (goLongCondition1 and timePeriod and notInTrade)
+    stopLoss = low * 0.97
+    takeProfit = high * 1.12
+    strategy.entry("long", strategy.long)
+    strategy.exit("exit", "long", stop=stopLoss, limit=takeProfit)
+plot(fastEMA, color=color.blue)
+plot(slowEMA, color=color.yellow)
