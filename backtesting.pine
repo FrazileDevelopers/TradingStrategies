@@ -1,0 +1,29 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © frazilex
+
+//@version=4
+strategy("Moving Average Cross", overlay = true)
+ema20 = ema(close, 20)
+ema50 = ema(close, 50)
+
+long = ema20 > ema50
+short = ema20 < ema50
+
+longCondition = long and long[10] and not long[11]
+shortCondition = short and short[10] and not short[11]
+
+closelong = ema20 < ema50 and not long[11]
+closeshort = ema20 > ema50 and not short[11]
+
+plot(ema20, title="20", color=color.yellow, linewidth = 3)
+plot(ema50, title="50", color=color.aqua, linewidth = 2)
+
+start = timestamp(2020, 9, 1, 0, 0)
+end = timestamp(2021, 9, 1, 0, 0)
+
+if time >= start and time <= end
+    strategy.entry("Long", strategy.long, 100.0, when = longCondition)
+    strategy.entry("Short", strategy.short, 100.0, when = shortCondition)
+
+strategy.close("Long", when = closeshort)
+strategy.close("Short", when = closelong)
